@@ -183,7 +183,7 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 <header><div class="wrap">
   <div class="top">
     <h1>🏠 이사 매물 100선 <small id="subt">네이버부동산 · 직방 · 다방</small></h1>
-    <div class="tabs"><button class="on" data-tab="view">🏞 조망 추천 30</button><button data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
+    <div class="tabs"><button data-tab="new">🆕 신규 매물</button><button class="on" data-tab="view">🏞 조망 추천 30</button><button data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
     <div class="grow"></div>
     <div class="search">🔍<input id="q" placeholder="동·주소·설명·중개사 검색" autocomplete="off"></div>
     <button class="chip" id="ftog">필터 ▾</button>
@@ -235,6 +235,8 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 const D=window.DATA, $=s=>document.querySelector(s);
 const SRCK={'네이버':'naver','직방':'zigbang','다방':'dabang'}, SRCN={'네이버':'네이버부동산','직방':'직방','다방':'다방'};
 let tab='view', cur=null, idx=0, list=[];
+const NEWLIST=()=>[...D.top,...D.rest].filter(r=>r.isNew&&r.status!=='gone');
+if(NEWLIST().length) tab='new';
 const AL=D.alias||{}; const resolve=k=>{let x=k,i=0; while(AL[x]&&i<3){x=AL[x];i++} return x};
 const R=window.RECO||{picks:[],criteria:[],excluded:[]}; const RM={}; R.picks.forEach((p,i)=>{p.i=i+1;p.k=resolve(p.k);RM[p.k]=p});
 const V=window.VIEW30||{picks:[],criteria:[],excluded:[]}; const VM={}; V.picks.forEach((p,i)=>{p.i=i+1;p.k=resolve(p.k);VM[p.k]=p});
@@ -242,7 +244,7 @@ const ALL=()=>[...D.top,...D.rest]; const P2N={yes:'명시',est:'추정'};
 const p2Badge=r=>r.p2?`<span class="bd p2 ${r.p2==='est'?'est':''}">⚡ 특급 · 주차 2대+ ${P2N[r.p2]}</span>`:'';
 const addrLine=r=>r.loc==='exact'?esc(r.addr):(r.addrEst?`${esc(r.addr)} <b>· 추정 ${esc(r.addrEst)}</b>`:`${esc(r.addr)} <b>· 좌표 기준 추정 위치</b>`);
 const TIERN={S:'최우선',A:'강력 추천',B:'대안'};
-const baseList=()=>tab==='reco'?R.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='view'?V.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='top'?D.top:D.rest));
+const baseList=()=>tab==='reco'?R.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='view'?V.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='new'?NEWLIST():(tab==='top'?D.top:D.rest)));
 const LS=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
 const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let favs=new Set(LS('h100.favs')||[]), memos=LS('h100.memos')||{};
@@ -292,7 +294,7 @@ function filter(){
   const S={rank:(a,b)=>(a.rank||1e9)-(b.rank||1e9)||(b.score||0)-(a.score||0),rent:(a,b)=>n(a.rent)-n(b.rent),rentd:(a,b)=>n(b.rent)-n(a.rent),py:(a,b)=>(b.py||0)-(a.py||0),
     ppy:(a,b)=>n(a.rent&&a.py?a.rent/a.py:null)-n(b.rent&&b.py?b.rent/b.py:null),dh:(a,b)=>n(a.dh)-n(b.dh),ds:(a,b)=>n(a.ds)-n(b.ds),dep:(a,b)=>n(a.dep)-n(b.dep),
     confirm:(a,b)=>(b.confirm||'').localeCompare(a.confirm||''),nph:(a,b)=>(b.nph||0)-(a.nph||0),p2:(a,b)=>((b.p2?1:0)-(a.p2?1:0))||((a.rank||1e9)-(b.rank||1e9)),prom:(a,b)=>(b.prom??-1e9)-(a.prom??-1e9)};
-  const G=r=>r.status==='gone'?1:0; if(tab==='reco') out.sort((a,b)=>(G(a)-G(b))||((b.p2?1:0)-(a.p2?1:0))||(RM[a.k].i-RM[b.k].i)); else if(tab==='view') out.sort((a,b)=>(G(a)-G(b))||((b.p2?1:0)-(a.p2?1:0))||(VM[a.k].i-VM[b.k].i)); else { out.sort(S[st.sort]||S.rank); out.sort((a,b)=>G(a)-G(b)); } return out;
+  const G=r=>r.status==='gone'?1:0; if(tab==='new') out.sort((a,b)=>((b.p2?1:0)-(a.p2?1:0))||((b.taste||0)-(a.taste||0))||((b.firstSeen||'').localeCompare(a.firstSeen||''))); else if(tab==='reco') out.sort((a,b)=>(G(a)-G(b))||((b.p2?1:0)-(a.p2?1:0))||(RM[a.k].i-RM[b.k].i)); else if(tab==='view') out.sort((a,b)=>(G(a)-G(b))||((b.p2?1:0)-(a.p2?1:0))||(VM[a.k].i-VM[b.k].i)); else { out.sort(S[st.sort]||S.rank); out.sort((a,b)=>G(a)-G(b)); } return out;
 }
 function card(r){
   const el=document.createElement('article'); el.className='card'+(r.status==='gone'?' isgone':''); el.dataset.k=r.k;
@@ -309,16 +311,17 @@ function card(r){
     <div class="tagsrow">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}<span class="tg">집 ${km(r.dh)}</span><span class="tg">서울숲 ${km(r.ds)}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}</div>
     ${tab==='reco'&&RM[r.k]?`<div class="why"><div class="rt">${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
     ${tab==='view'&&VM[r.k]?`<div class="why"><div class="rt">${esc(VM[r.k].title)}</div><div class="tagsrow" style="margin:0 0 6px">${VM[r.k].vt.map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}${r.elev!=null?`<span class="tg">해발 ${r.elev}m · 돌출 ${r.prom>0?'+':''}${r.prom}m</span>`:''}</div><ul>${VM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${VM[r.k].caution?`<div class="cau">⚠️ ${esc(VM[r.k].caution)}</div>`:''}</div>`:''}
-    ${r.p2&&tab!=='view'&&tab!=='reco'?`<div class="why" style="padding-top:8px"><div class="cau" style="margin:0;color:#ffd48a">⚡ ${esc(r.p2why)}</div></div>`:''}
+    ${tab==='new'?`<div class="why"><div class="rt">🤖 자동 점수 ${r.taste!=null?r.taste:'-'}점 <small style="font-weight:600;color:var(--txt2)">· 처음 발견 ${esc(r.firstSeen||'')}${r.relistFrom?' · 🔁 재등록':''}</small></div><div class="tagsrow" style="margin:0 0 4px">${(r.tasteWhy||[]).map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}${r.elev!=null?`<span class="tg">해발 ${r.elev}m · 돌출 ${r.prom>0?'+':''}${r.prom}m</span>`:''}${r.rank?`<span class="tg">100선 ${r.rank}위</span>`:''}</div>${r.p2?`<div class="cau">⚡ ${esc(r.p2why)}</div>`:''}</div>`:''}
+    ${r.p2&&tab!=='view'&&tab!=='reco'&&tab!=='new'?`<div class="why" style="padding-top:8px"><div class="cau" style="margin:0;color:#ffd48a">⚡ ${esc(r.p2why)}</div></div>`:''}
     ${r.map?`<div class="mapw"><img loading="lazy" src="${r.map}" alt=""><div class="addr">📍 ${addrLine(r)}</div></div>`:''}
   </div>`;
   return el;
 }
 function render(){
   list=filter(); const g=$('#grid'); g.innerHTML=''; const frag=document.createDocumentFragment();
-  const grouped=(tab==='view'||tab==='reco'||st.sort==='p2'); let lastG=null;
+  const grouped=(tab==='view'||tab==='reco'||tab==='new'||st.sort==='p2'); let lastG=null;
   const nGone=list.filter(x=>x.status==='gone').length;
-  list.forEach(r=>{ if(grouped){const gk=r.status==='gone'?'gone':(r.p2?'p2':'rest'); if(gk!==lastG){lastG=gk; const h=document.createElement('div'); h.className='sech'+(gk==='p2'?' gold':(gk==='gone'?' red':'')); h.innerHTML=gk==='gone'?`⛔ 내려간 매물 <small>${nGone}건 · 마지막 점검 ${D.built}</small>`:(gk==='p2'?`⚡ 특급 · 주차 2대 이상(명시·추정) <small>${list.filter(x=>x.p2&&x.status!=='gone').length}건 · 추정은 통화 확인</small>`:(tab==='view'?`🏞 조망 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='reco'?`⭐ 추천 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:`그 외 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`))); frag.appendChild(h)}} frag.appendChild(card(r)) });
+  list.forEach(r=>{ if(grouped){const gk=r.status==='gone'?'gone':(r.p2?'p2':'rest'); if(gk!==lastG){lastG=gk; const h=document.createElement('div'); h.className='sech'+(gk==='p2'?' gold':(gk==='gone'?' red':'')); h.innerHTML=gk==='gone'?`⛔ 내려간 매물 <small>${nGone}건 · 마지막 점검 ${D.built}</small>`:(gk==='p2'?`⚡ 특급 · 주차 2대 이상(명시·추정) <small>${list.filter(x=>x.p2&&x.status!=='gone').length}건 · 추정은 통화 확인</small>`:(tab==='view'?`🏞 조망 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='reco'?`⭐ 추천 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='new'?`🆕 자동 점수 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건 · 9점 이상은 Slack 즉시 알림</small>`:`그 외 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`)))); frag.appendChild(h)}} frag.appendChild(card(r)) });
   g.appendChild(frag);
   $('#empty').style.display=list.length?'none':'block';
   const base=baseList().length;
@@ -328,6 +331,9 @@ function render(){
     <details class="excl"><summary>아깝게 제외한 매물과 이유</summary><ul>${X.excluded.map(([a,b])=>`<li><b>${esc(a)}</b> — ${esc(b)}</li>`).join('')}</ul></details>`;
   if(tab==='reco'){ ri.classList.add('on'); ri.innerHTML=intro(R,'⭐','BK 맞춤 추천','100선(수집 2026-10-07) 기준'); }
   else if(tab==='view'){ ri.classList.add('on'); ri.innerHTML=intro(V,'🏞','조망 우선 추천','292건 전체(수집 2026-10-07) · 욕실 2개 이상'); }
+  else if(tab==='new'){ ri.classList.add('on'); const n=NEWLIST().length; ri.innerHTML=`<h2>🆕 신규 매물 ${n}건 <span style="font-size:13px;color:var(--txt2);font-weight:600">(현재 필터 ${list.length}건 · 전용 ${st.py}평 이상 · 월세 ${st.rent}만 이하)</span> <small style="font-size:12px;color:var(--txt3);font-weight:600">최근 ${D.newWindow||7}일 안에 처음 올라온 매물 · 매일 07:40 네이버·직방·다방 재수집 · 점검 ${D.built}</small></h2>
+    <p>세 사이트에서 새로 올라온 매물을 매일 추가합니다. 같은 주소·중개사로 번호만 바뀐 재등록은 🔁로 표시하고 신규에서 뺍니다. 자동 점수는 욕실 2개 이상·주차 2대·테라스/조망 언급·법인 가능성·언덕 지형·보증금·생활권으로 계산하며, 9점 이상은 Slack #bk-agent에 바로 알립니다. 사진 판독은 자동이 아니니 점수는 후보 정렬용으로만 쓰세요.</p>
+    <div class="rnote">${n?`오늘 기준 신규 중 ⚡특급 ${NEWLIST().filter(x=>x.p2).length}건 · 자동 9점 이상 ${NEWLIST().filter(x=>(x.taste||0)>=9).length}건. 7일이 지나면 100선·나머지 탭으로만 남습니다.`:'최근 7일 안에 새로 올라온 매물이 없습니다. 100선·나머지 탭에서 🆕 칩으로 다시 확인할 수 있습니다.'}</div>`; }
   else ri.classList.remove('on');
   $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${base}건 · ♥ ${favs.size}건 선택`;
   SS('h100.st',st);
@@ -432,7 +438,7 @@ $('#copyall').onclick=()=>copy(`이사 매물 ${list.length}건\n\n`+list.map(li
 
 $('#ftog').onclick=()=>{const f=$('#filters');f.classList.toggle('open');$('#ftog').textContent=f.classList.contains('open')?'필터 ▴':'필터 ▾'};
 $('#subt').textContent=`네이버부동산 · 직방 · 다방 · 수집 ${D.collected} · 점검 ${D.built}`; fillDong(); syncUI(); render();
-if(location.hash){const k=resolve(location.hash.slice(1)); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=VM[r.k]?'view':(RM[r.k]?'reco':(r.full?'top':'rest'));syncUI();render()} open(r) }}
+if(location.hash){const k=resolve(location.hash.slice(1)); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=VM[r.k]?'view':(RM[r.k]?'reco':(r.isNew?'new':(r.full?'top':'rest')));syncUI();render()} open(r) }}
 })();
 </script>
 </body>
