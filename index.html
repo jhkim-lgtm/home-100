@@ -248,7 +248,19 @@ const pyf=r=>r.py?`${r.py.toFixed(r.py%1?1:0)}평`:'-';
 const km=v=>v==null?'-':(v<1?Math.round(v*1000)+'m':v.toFixed(1)+'km');
 const img=(r,i,t)=>`img/${r.k}/${t?'t':''}${i}.jpg`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const mapUrl=r=>r.lat?`https://map.kakao.com/link/map/${encodeURIComponent(r.addr||r.dong)},${r.lat},${r.lon}`:`https://map.kakao.com/link/search/${encodeURIComponent(r.addr)}`;
+const UA=navigator.userAgent||''; const isIOS=/iPhone|iPad|iPod/i.test(UA)||(/Macintosh/i.test(UA)&&navigator.maxTouchPoints>1); const isAndroid=/Android/i.test(UA); const isMobile=isIOS||isAndroid;
+const addrFor=r=>r.loc==='exact'?(r.addr||r.dong):(r.addrEst||r.addr||r.dong);
+const NAME=r=>encodeURIComponent(addrFor(r)+(r.loc==='approx'?' (추정 위치)':''));
+const naverWeb=r=>`https://map.naver.com/p/search/${encodeURIComponent(addrFor(r))}?c=${r.lon},${r.lat},17,0,0,0,dh`;
+const kakaoWeb=r=>`https://map.kakao.com/link/map/${NAME(r)},${r.lat},${r.lon}`;
+const naverApp=r=>`nmap://place?lat=${r.lat}&lng=${r.lon}&name=${NAME(r)}&appname=jhkim-lgtm.github.io`;
+const kakaoApp=r=>`kakaomap://look?p=${r.lat},${r.lon}`;
+const naverLink=r=>isAndroid?`intent://place?lat=${r.lat}&lng=${r.lon}&name=${NAME(r)}&appname=jhkim-lgtm.github.io#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;S.browser_fallback_url=${encodeURIComponent(naverWeb(r))};end`:(isIOS?naverApp(r):naverWeb(r));
+const kakaoLink=r=>isAndroid?`intent://look?p=${r.lat},${r.lon}#Intent;scheme=kakaomap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=net.daum.android.map;S.browser_fallback_url=${encodeURIComponent(kakaoWeb(r))};end`:(isIOS?kakaoApp(r):kakaoWeb(r));
+const googleLink=r=>`https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}`;
+const mapUrl=kakaoWeb;
+// iOS: 앱 스킴을 열고 1.5초 안에 화면이 안 바뀌면(앱 없음) 웹 지도로 대체
+function appOpen(e){ const a=e.currentTarget; if(!isIOS||!a.dataset.fb)return; e.preventDefault(); const t=Date.now(); location.href=a.href; setTimeout(()=>{ if(!document.hidden&&Date.now()-t<2500) location.href=a.dataset.fb },1500); }
 const corpTag=r=>r.cv==='check'?'<span class="tg a">⚠️ 법인 확인 필요</span>':(r.cv==='high_noaddr'?'<span class="tg g">✅ 법인 가능성 높음 · 전입 불가</span>':'<span class="tg g">✅ 법인 가능성 높음</span>');
 
 function fillDong(){
@@ -342,10 +354,11 @@ function drawDetail(){
       <h3 style="margin-top:0">위치</h3>
       <div class="addrbox">📍 ${r.loc==='exact'?esc(r.addr):`${esc(r.addr)} <span class="est">· ${r.loc==='approx'?'주소 비공개 매물(다방) → 좌표로 추정한 지번: ':'번지 비공개 → 좌표로 추정한 지번: '}${esc(r.addrEst||'조회 실패')}</span>`}${r.roadEst?`<br><span style="color:var(--txt2)">도로명(추정) ${esc(r.roadEst)}</span>`:''}${r.elev!=null?`<br><span style="color:var(--txt2)">해발 ${r.elev}m · 주변 300m 대비 ${r.prom>0?'+':''}${r.prom}m${r.open&&r.open.length?` · 트인 방향 ${r.open.join('·')}`:''}</span>`:''}</div>
       <div class="dmap" id="dmap">${r.map?`<img src="${r.map}" alt="">`:''}</div>
-      <div class="acts" style="margin-top:0"><a class="btn" href="https://map.naver.com/p?c=${r.lon},${r.lat},17,0,0,0,dh" target="_blank" rel="noopener">네이버지도 열기 ↗</a><a class="btn" href="${mapUrl(r)}" target="_blank" rel="noopener">카카오맵 열기 ↗</a><a class="btn" href="https://www.google.com/maps?q=${r.lat},${r.lon}" target="_blank" rel="noopener">구글맵 ↗</a></div>
+      <div class="acts" style="margin-top:0"><a class="btn mapapp" href="${naverLink(r)}" data-fb="${naverWeb(r)}" ${isMobile?'':'target="_blank" rel="noopener"'}>${isMobile?'네이버지도 앱에서 이 지점 보기':'네이버지도 열기 ↗'}</a><a class="btn mapapp" href="${kakaoLink(r)}" data-fb="${kakaoWeb(r)}" ${isMobile?'':'target="_blank" rel="noopener"'}>${isMobile?'카카오맵 앱에서 이 지점 보기':'카카오맵 열기 ↗'}</a><a class="btn" href="${googleLink(r)}" target="_blank" rel="noopener">구글맵 ↗</a></div>
+      ${isMobile?`<div style="font-size:12px;color:var(--txt3);margin:-6px 0 10px">앱이 없으면 웹 지도로 열립니다. ${r.loc==='approx'?'다방 매물은 추정 위치(반경 100m)에 핀이 찍힙니다.':''}</div>`:''}
       <dl class="kv">${kv}</dl>
       <div class="corpbox ${r.cv==='check'?'check':'high'}">${esc(r.corp)}<span>${esc(r.corpHint||'설명문에 법인 관련 언급 없음')} · 통화 확인: 법인 명의 계약 · 세금계산서 · 사업자등록 · 전입 가능 · 세대수 · 입주일</span></div>
-      <div class="acts"><a class="btn pri" href="${r.url}" target="_blank" rel="noopener">${SRCN[r.src]} 원문 보기 ↗</a><a class="btn" href="${mapUrl(r)}" target="_blank" rel="noopener">🗺 지도</a>
+      <div class="acts"><a class="btn pri" href="${r.url}" target="_blank" rel="noopener">${SRCN[r.src]} 원문 보기 ↗</a><a class="btn mapapp" href="${kakaoLink(r)}" data-fb="${kakaoWeb(r)}" ${isMobile?'':'target="_blank" rel="noopener"'}>🗺 지도</a>
         <button class="btn" id="dfav">${favs.has(r.k)?'♥ 선택됨':'♡ 선택'}</button><button class="btn" id="dcopy">요약 복사</button></div>
       <h3>연락처</h3><div>${r.tels.length?r.tels.map(t=>`<a class="tel" href="tel:${t.replace(/[^\d+]/g,'')}">📞 ${esc(t)}</a>`).join(''):'<span style="color:var(--txt3)">원문에서 확인</span>'}</div>
       <h3>내 메모</h3><textarea class="memo" id="memo" placeholder="통화 결과·느낀 점 (이 브라우저에만 저장)">${esc(memos[r.k]||'')}</textarea>
@@ -354,6 +367,7 @@ function drawDetail(){
   $('#dfav').onclick=()=>{toggleFav(r.k);$('#dfav').textContent=favs.has(r.k)?'♥ 선택됨':'♡ 선택'};
   $('#dcopy').onclick=()=>copy(lineOf(r),'매물 요약을 복사했습니다');
   $('#memo').oninput=e=>{memos[r.k]=e.target.value; if(!memos[r.k])delete memos[r.k]; SS('h100.memos',memos)};
+  document.querySelectorAll('#dlg .mapapp').forEach(a=>a.onclick=appOpen);
   initMap(r);
   if(r.nph){ $('#al').onclick=()=>go(-1); $('#ar').onclick=()=>go(1); $('#mainimg').onclick=()=>openLb();
     $('#thumbs').querySelectorAll('img').forEach(t=>t.onclick=()=>{idx=+t.dataset.i;showIdx()});
