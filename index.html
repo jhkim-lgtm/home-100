@@ -8,6 +8,8 @@
 <meta name="description" content="네이버부동산·직방·다방에서 모은 이사 후보 매물을 사진과 함께 한 화면에서 보는 뷰어">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111'/%3E%3Cpath d='M14 34 32 18l18 16v16H14z' fill='%234A95FF'/%3E%3C/svg%3E">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
 <style>
 :root{
   --bg:#0f1115; --bg2:#161a21; --card:#1b2029; --card2:#222835; --line:#2a3140; --txt:#e8ecf2; --txt2:#9aa4b5; --txt3:#6b7483;
@@ -128,11 +130,25 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 .why .rt{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:6px;line-height:1.4}
 .why ul{margin:0;padding-left:16px;font-size:13px;color:var(--txt2);line-height:1.55}.why li{margin:2px 0}
 .why .cau{margin-top:7px;font-size:12.5px;color:#ffd48a;line-height:1.5}
+.chip.gold.on{background:var(--amber);color:#111;border-color:var(--amber)}
+.bd.p2{background:#f5b942;color:#111}.bd.p2.est{background:#ffe0a3;color:#4a3300}
+.bd.vt{background:#1f8f6a;color:#fff}
+.mapw{position:relative;display:block;margin:10px -12px -12px;border-top:1px solid var(--line)}
+.mapw img{display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:#222}
+.mapw .addr{position:absolute;left:0;right:0;bottom:0;padding:6px 10px;font-size:12px;line-height:1.4;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75));text-shadow:0 1px 2px #000}
+.mapw .addr b{color:#ffd48a}
+.sech{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:6px 0 -4px;font-size:15px;font-weight:800}
+.sech small{font-weight:600;color:var(--txt2);font-size:13px}
+.sech.gold{color:var(--amber)}
+.dmap{height:300px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#222;margin:8px 0 10px}
+.dmap img{width:100%;height:100%;object-fit:cover}
+.addrbox{font-size:14px;line-height:1.6;margin-bottom:8px}.addrbox .est{color:#ffd48a}
+.leaflet-container{font-family:inherit;background:#e8e4df}
 .bd.tier{background:var(--amber);color:#111}.bd.tierS{background:var(--pink);color:#fff}
 .rbox{background:rgba(74,149,255,.1);border:1px solid rgba(74,149,255,.35);border-radius:12px;padding:12px 14px;margin:0 0 14px}
 .rbox .rt{font-weight:800;font-size:15px;margin-bottom:6px;line-height:1.4}
 .rbox ul{margin:0;padding-left:16px;font-size:13.5px;color:var(--txt);line-height:1.55}.rbox .cau{margin-top:8px;font-size:13px;color:#ffd48a;line-height:1.5}
-@media (max-width:560px){.card .why ul{display:block}.card .why{display:block}}
+@media (max-width:560px){.card .why ul{display:block}.card .why{display:block}.mapw .addr{font-size:11px}.dmap{height:240px}}
 .lb{position:fixed;inset:0;background:#000;z-index:80;display:none;align-items:center;justify-content:center}
 .lb.on{display:flex}
 .lb img{max-width:100vw;max-height:100vh;object-fit:contain}
@@ -163,8 +179,8 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 <body>
 <header><div class="wrap">
   <div class="top">
-    <h1>🏠 이사 매물 100선 <small>네이버부동산 · 직방 · 다방 · 수집 2026-10-07 · BK 추천 2026-10-12</small></h1>
-    <div class="tabs"><button class="on" data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
+    <h1>🏠 이사 매물 100선 <small>네이버부동산 · 직방 · 다방 · 수집 2026-10-07 · 추천·조망·지도 2026-10-12</small></h1>
+    <div class="tabs"><button class="on" data-tab="view">🏞 조망 추천 30</button><button data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
     <div class="grow"></div>
     <div class="search">🔍<input id="q" placeholder="동·주소·설명·중개사 검색" autocomplete="off"></div>
     <button class="chip" id="ftog">필터 ▾</button>
@@ -180,9 +196,11 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
     <button class="chip" id="imm">즉시입주</button>
     <button class="chip" id="whole">통건물</button>
     <button class="chip" id="p10">⭐ 1차 10선</button>
+    <button class="chip" id="b2">🛁 욕실 2개+</button>
+    <button class="chip gold" id="p2">⚡ 특급 · 주차 2대+</button>
     <button class="chip fav" id="favonly">♥ 내 선택</button>
     <div class="sel"><select id="sort">
-      <option value="rank">추천순</option><option value="rent">월세 낮은순</option><option value="rentd">월세 높은순</option><option value="py">넓은순</option>
+      <option value="rank">추천순</option><option value="p2">⚡ 특급 우선</option><option value="prom">언덕 위(돌출) 순</option><option value="rent">월세 낮은순</option><option value="rentd">월세 높은순</option><option value="py">넓은순</option>
       <option value="ppy">평당 월세 낮은순</option><option value="dh">집(회나무로)에서 가까운순</option><option value="ds">서울숲역에서 가까운순</option><option value="dep">보증금 낮은순</option><option value="confirm">최근 확인순</option><option value="nph">사진 많은순</option>
     </select></div>
     <button class="chip" id="reset">초기화</button>
@@ -196,7 +214,7 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
   <div class="empty" id="empty" style="display:none">조건에 맞는 매물이 없습니다.</div>
   <div class="foot">
     기준점: 집(회나무로73·이태원동 5-7)과 서울숲역. 월세·보증금 단위는 만원이며 네이버·직방·다방 원문 기준(2026-10-07 수집)으로, 현재 거래 상태와 실제 조건은 중개사 통화로 확인합니다.<br>
-    법인 계약 판정은 설명문·용도(상가주택·근생·다가구 전체) 기준 1차 힌트입니다. 다방은 동까지만 주소가 공개되고, 세대수 0은 건축물대장 미기재입니다. ♥ 선택과 메모는 이 브라우저에만 저장됩니다.
+    법인 계약 판정은 설명문·용도(상가주택·근생·다가구 전체) 기준 1차 힌트입니다. 다방은 동까지만 주소가 공개되고, 세대수 0은 건축물대장 미기재입니다. ♥ 선택과 메모는 이 브라우저에만 저장됩니다. 지도는 OpenStreetMap(© OpenStreetMap contributors) 기반이며, 다방 매물은 동까지만 공개돼 좌표로 추정한 위치(반경 100m)와 지번을 표시합니다. 고도는 SRTM 30m 자료입니다. ⚡특급 '추정'은 건물 주차대수·세대수·설명문으로 계산한 값이라 세대 배정은 통화 확인이 필요합니다.
   </div>
 </main>
 
@@ -206,18 +224,23 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 
 <script src="data.js"></script>
 <script src="reco.js"></script>
+<script src="view30.js"></script>
 <script>
 (function(){
 const D=window.DATA, $=s=>document.querySelector(s);
 const SRCK={'네이버':'naver','직방':'zigbang','다방':'dabang'}, SRCN={'네이버':'네이버부동산','직방':'직방','다방':'다방'};
-let tab='reco', cur=null, idx=0, list=[];
+let tab='view', cur=null, idx=0, list=[];
 const R=window.RECO||{picks:[],criteria:[],excluded:[]}; const RM={}; R.picks.forEach((p,i)=>{p.i=i+1;RM[p.k]=p});
+const V=window.VIEW30||{picks:[],criteria:[],excluded:[]}; const VM={}; V.picks.forEach((p,i)=>{p.i=i+1;VM[p.k]=p});
+const ALL=()=>[...D.top,...D.rest]; const P2N={yes:'명시',est:'추정'};
+const p2Badge=r=>r.p2?`<span class="bd p2 ${r.p2==='est'?'est':''}">⚡ 특급 · 주차 2대+ ${P2N[r.p2]}</span>`:'';
+const addrLine=r=>r.loc==='exact'?esc(r.addr):(r.addrEst?`${esc(r.addr)} <b>· 추정 ${esc(r.addrEst)}</b>`:`${esc(r.addr)} <b>· 좌표 기준 추정 위치</b>`);
 const TIERN={S:'최우선',A:'강력 추천',B:'대안'};
-const baseList=()=>tab==='reco'?R.picks.map(p=>[...D.top,...D.rest].find(r=>r.k===p.k)).filter(Boolean):(tab==='top'?D.top:D.rest);
+const baseList=()=>tab==='reco'?R.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='view'?V.picks.map(p=>ALL().find(r=>r.k===p.k)).filter(Boolean):(tab==='top'?D.top:D.rest));
 const LS=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
 const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let favs=new Set(LS('h100.favs')||[]), memos=LS('h100.memos')||{};
-const st={q:'',zone:'',dong:'',type:'',src:'',rent:600,py:15,corp:false,imm:false,whole:false,p10:false,fav:false,sort:'rank'};
+const st={q:'',zone:'',dong:'',type:'',src:'',rent:600,py:15,corp:false,imm:false,whole:false,p10:false,b2:false,p2:false,fav:false,sort:'rank'};
 const saved=LS('h100.st'); if(saved) Object.assign(st,saved);
 
 const won=v=>v==null?'-':(v>=10000?(v/10000).toFixed(v%10000?1:0)+'억':Math.round(v).toLocaleString('ko-KR')+'만');
@@ -235,7 +258,7 @@ function fillDong(){
 function syncUI(){
   $('#q').value=st.q; $('#zone').value=st.zone; $('#dong').value=st.dong; $('#type').value=st.type; $('#src').value=st.src; $('#sort').value=st.sort;
   $('#rent').value=st.rent; $('#rentv').textContent=st.rent+'만'; $('#py').value=st.py; $('#pyv').textContent=st.py+'평';
-  ['corp','imm','whole','p10'].forEach(k=>$('#'+k).classList.toggle('on',!!st[k])); $('#favonly').classList.toggle('on',st.fav);
+  ['corp','imm','whole','p10','b2','p2'].forEach(k=>$('#'+k).classList.toggle('on',!!st[k])); $('#favonly').classList.toggle('on',st.fav);
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
 }
 function filter(){
@@ -243,41 +266,50 @@ function filter(){
   let out=src.filter(r=>{
     if(st.zone&&r.zone!==st.zone)return false; if(st.dong&&r.dong!==st.dong)return false; if(st.type&&r.type!==st.type)return false; if(st.src&&r.src!==st.src)return false;
     if(r.rent!=null&&r.rent>st.rent)return false; if(r.py!=null&&r.py<st.py)return false;
-    if(st.corp&&r.cv==='check')return false; if(st.imm&&!r.imm)return false; if(st.whole&&!r.whole)return false; if(st.p10&&!r.pick10)return false; if(st.fav&&!favs.has(r.k))return false;
+    if(st.corp&&r.cv==='check')return false; if(st.imm&&!r.imm)return false; if(st.whole&&!r.whole)return false; if(st.p10&&!r.pick10)return false; if(st.b2&&!(r.baths>=2))return false; if(st.p2&&!r.p2)return false; if(st.fav&&!favs.has(r.k))return false;
     if(q){const h=`${r.dong} ${r.addr} ${r.desc} ${r.realtor} ${r.type} ${r.sub} ${r.tags} ${r.rank}`.toLowerCase(); if(!h.includes(q))return false}
     return true;
   });
   const n=v=>v==null?1e18:v;
   const S={rank:(a,b)=>(a.rank||1e9)-(b.rank||1e9)||(b.score||0)-(a.score||0),rent:(a,b)=>n(a.rent)-n(b.rent),rentd:(a,b)=>n(b.rent)-n(a.rent),py:(a,b)=>(b.py||0)-(a.py||0),
     ppy:(a,b)=>n(a.rent&&a.py?a.rent/a.py:null)-n(b.rent&&b.py?b.rent/b.py:null),dh:(a,b)=>n(a.dh)-n(b.dh),ds:(a,b)=>n(a.ds)-n(b.ds),dep:(a,b)=>n(a.dep)-n(b.dep),
-    confirm:(a,b)=>(b.confirm||'').localeCompare(a.confirm||''),nph:(a,b)=>(b.nph||0)-(a.nph||0)};
-  if(tab==='reco') out.sort((a,b)=>RM[a.k].i-RM[b.k].i); else out.sort(S[st.sort]||S.rank); return out;
+    confirm:(a,b)=>(b.confirm||'').localeCompare(a.confirm||''),nph:(a,b)=>(b.nph||0)-(a.nph||0),p2:(a,b)=>((b.p2?1:0)-(a.p2?1:0))||((a.rank||1e9)-(b.rank||1e9)),prom:(a,b)=>(b.prom??-1e9)-(a.prom??-1e9)};
+  if(tab==='reco') out.sort((a,b)=>((b.p2?1:0)-(a.p2?1:0))||(RM[a.k].i-RM[b.k].i)); else if(tab==='view') out.sort((a,b)=>((b.p2?1:0)-(a.p2?1:0))||(VM[a.k].i-VM[b.k].i)); else out.sort(S[st.sort]||S.rank); return out;
 }
 function card(r){
   const el=document.createElement('article'); el.className='card'; el.dataset.k=r.k;
   const strip=r.nph>1?`<div class="strip">${[2,3,4,5].filter(i=>i<=r.nph).map(i=>`<img loading="lazy" src="${img(r,i,1)}" alt="">`).join('')}</div>`:'';
   el.innerHTML=`<div class="ph">${r.nph?`<img loading="lazy" src="${img(r,1,1)}" alt="" onload="this.classList.add('ok')">`:''}${strip}
-    <div class="badges">${tab==='reco'&&RM[r.k]?`<span class="bd tier ${RM[r.k].tier==='S'?'tierS':''}">추천 ${RM[r.k].i} · ${TIERN[RM[r.k].tier]}</span>`:''}${r.rank?`<span class="bd rank">${r.rank}위</span>`:''}${r.pick10?`<span class="bd p10">⭐ 10선 ${r.pick10}</span>`:''}</div>
+    <div class="badges">${p2Badge(r)}${tab==='view'&&VM[r.k]?`<span class="bd vt">🏞 조망 ${VM[r.k].i} · ${VM[r.k].v}점</span>`:''}${tab==='reco'&&RM[r.k]?`<span class="bd tier ${RM[r.k].tier==='S'?'tierS':''}">추천 ${RM[r.k].i} · ${TIERN[RM[r.k].tier]}</span>`:''}${r.rank?`<span class="bd rank">${r.rank}위</span>`:''}${r.pick10?`<span class="bd p10">⭐ 10선 ${r.pick10}</span>`:''}</div>
     <div class="src"><span class="bd ${SRCK[r.src]}">${SRCN[r.src]}</span></div>
     <button class="heart ${favs.has(r.k)?'on':''}" data-fav="${r.k}" title="선택">${favs.has(r.k)?'♥':'♡'}</button>
     ${r.nph?`<span class="nph">📷 ${r.nph}${r.full?'':' / '+r.nsrc}</span>`:'<span class="nph">사진 없음</span>'}</div>
   <div class="body">
     <div class="price">월 ${won(r.rent)}<small>보증금 ${won(r.dep)}${r.manage?` · 관리비 ${esc(r.manage)}`:''}</small></div>
     <div class="title">${esc(r.dong)} · ${esc(r.type)}${r.sub&&r.sub!==r.type?` (${esc(r.sub)})`:''} · 전용 ${pyf(r)}${r.excl?` (${r.excl}㎡)`:''}</div>
-    <div class="sub">${esc(r.addr)} · ${esc(r.floor)}층${r.rooms?` · 방 ${esc(r.rooms)}`:''}${r.hh?` · ${r.hh}세대`:''} · ${esc(r.movein||'입주 미기재')}</div>
+    <div class="sub">${esc(r.addr)} · ${esc(r.floor)}층${r.rooms?` · 방 ${esc(r.rooms)}`:''}${r.baths?` · 🛁 ${r.baths}`:''}${r.hh?` · ${r.hh}세대`:''} · ${esc(r.movein||'입주 미기재')}</div>
     <div class="tagsrow">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}<span class="tg">집 ${km(r.dh)}</span><span class="tg">서울숲 ${km(r.ds)}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}</div>
     ${tab==='reco'&&RM[r.k]?`<div class="why"><div class="rt">${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
+    ${tab==='view'&&VM[r.k]?`<div class="why"><div class="rt">${esc(VM[r.k].title)}</div><div class="tagsrow" style="margin:0 0 6px">${VM[r.k].vt.map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}${r.elev!=null?`<span class="tg">해발 ${r.elev}m · 돌출 ${r.prom>0?'+':''}${r.prom}m</span>`:''}</div><ul>${VM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${VM[r.k].caution?`<div class="cau">⚠️ ${esc(VM[r.k].caution)}</div>`:''}</div>`:''}
+    ${r.p2&&tab!=='view'&&tab!=='reco'?`<div class="why" style="padding-top:8px"><div class="cau" style="margin:0;color:#ffd48a">⚡ ${esc(r.p2why)}</div></div>`:''}
+    ${r.map?`<div class="mapw"><img loading="lazy" src="${r.map}" alt=""><div class="addr">📍 ${addrLine(r)}</div></div>`:''}
   </div>`;
   return el;
 }
 function render(){
-  list=filter(); const g=$('#grid'); g.innerHTML=''; const frag=document.createDocumentFragment(); list.forEach(r=>frag.appendChild(card(r))); g.appendChild(frag);
+  list=filter(); const g=$('#grid'); g.innerHTML=''; const frag=document.createDocumentFragment();
+  const grouped=(tab==='view'||tab==='reco'||st.sort==='p2'); let lastG=null;
+  list.forEach(r=>{ if(grouped){const gk=r.p2?'p2':'rest'; if(gk!==lastG){lastG=gk; const h=document.createElement('div'); h.className='sech'+(gk==='p2'?' gold':''); h.innerHTML=gk==='p2'?`⚡ 특급 · 주차 2대 이상(명시·추정) <small>${list.filter(x=>x.p2).length}건 · 추정은 통화 확인</small>`:(tab==='view'?`🏞 조망 순 <small>${list.filter(x=>!x.p2).length}건</small>`:(tab==='reco'?`⭐ 추천 순 <small>${list.filter(x=>!x.p2).length}건</small>`:`그 외 <small>${list.filter(x=>!x.p2).length}건</small>`)); frag.appendChild(h)}} frag.appendChild(card(r)) });
+  g.appendChild(frag);
   $('#empty').style.display=list.length?'none':'block';
   const base=baseList().length;
-  const ri=$('#rintro'); if(tab==='reco'){ ri.classList.add('on'); if(!ri.innerHTML) ri.innerHTML=`<h2>⭐ BK 맞춤 추천 ${R.picks.length}건 <small style="font-size:12px;color:var(--txt3);font-weight:600">작성 ${R.made} · 100선(수집 2026-10-07) 기준</small></h2><p>${esc(R.intro)}</p>
-    <div class="crit">${R.criteria.map(([a,b])=>`<div><b>${esc(a)}</b>${esc(b)}</div>`).join('')}</div>
-    <div class="rnote">${esc(R.note)}</div>
-    <details class="excl"><summary>아깝게 제외한 매물과 이유</summary><ul>${R.excluded.map(([a,b])=>`<li><b>${esc(a)}</b> — ${esc(b)}</li>`).join('')}</ul></details>`; } else ri.classList.remove('on');
+  const ri=$('#rintro'); const intro=(X,icon,name,base)=>`<h2>${icon} ${name} ${X.picks.length}건 <small style="font-size:12px;color:var(--txt3);font-weight:600">작성 ${X.made} · ${base}</small></h2><p>${esc(X.intro)}</p>
+    <div class="crit">${X.criteria.map(([a,b])=>`<div><b>${esc(a)}</b>${esc(b)}</div>`).join('')}</div>
+    <div class="rnote">${esc(X.note)}</div>
+    <details class="excl"><summary>아깝게 제외한 매물과 이유</summary><ul>${X.excluded.map(([a,b])=>`<li><b>${esc(a)}</b> — ${esc(b)}</li>`).join('')}</ul></details>`;
+  if(tab==='reco'){ ri.classList.add('on'); ri.innerHTML=intro(R,'⭐','BK 맞춤 추천','100선(수집 2026-10-07) 기준'); }
+  else if(tab==='view'){ ri.classList.add('on'); ri.innerHTML=intro(V,'🏞','조망 우선 추천','292건 전체(수집 2026-10-07) · 욕실 2개 이상'); }
+  else ri.classList.remove('on');
   $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${base}건 · ♥ ${favs.size}건 선택`;
   SS('h100.st',st);
 }
@@ -285,12 +317,12 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clea
 function toggleFav(k){ if(favs.has(k))favs.delete(k); else favs.add(k); SS('h100.favs',[...favs]);
   document.querySelectorAll(`[data-fav="${k}"]`).forEach(b=>{b.classList.toggle('on',favs.has(k));b.textContent=favs.has(k)?'♥':'♡'});
   $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${baseList().length}건 · ♥ ${favs.size}건 선택`; if(st.fav)render(); }
-function lineOf(r){return `${RM[r.k]?'[BK 추천 '+RM[r.k].i+'] ':''}${r.rank?r.rank+'위 ':''}${r.dong} ${r.type} 전용 ${pyf(r)} · 월 ${won(r.rent)}/보증금 ${won(r.dep)} · ${r.addr} · ${r.floor}층${r.hh?' · '+r.hh+'세대':''} · ${r.movein||''}${r.tels[0]?' · '+r.realtor+' '+r.tels.join(', '):''}${memos[r.k]?' · 메모: '+memos[r.k]:''}\n${r.url}`}
+function lineOf(r){return `${r.p2?'[⚡특급 주차2대+ '+P2N[r.p2]+'] ':''}${VM[r.k]?'[조망 '+VM[r.k].i+'] ':''}${RM[r.k]?'[BK 추천 '+RM[r.k].i+'] ':''}${r.rank?r.rank+'위 ':''}${r.dong} ${r.type} 전용 ${pyf(r)} · 월 ${won(r.rent)}/보증금 ${won(r.dep)} · ${r.addr} · ${r.floor}층${r.baths?' · 욕실 '+r.baths:''}${r.hh?' · '+r.hh+'세대':''} · ${r.movein||''}${r.loc!=='exact'&&r.addrEst?' · 추정 지번 '+r.addrEst:''}${r.tels[0]?' · '+r.realtor+' '+r.tels.join(', '):''}${memos[r.k]?' · 메모: '+memos[r.k]:''}\n${r.url}`}
 function copy(text,msg){navigator.clipboard?.writeText(text).then(()=>toast(msg),()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(msg)})}
 
 // detail
 function open(r){ cur=r; idx=0; $('#ov').classList.add('on'); document.body.style.overflow='hidden'; drawDetail(); history.replaceState(null,'','#'+r.k); }
-function close(){ $('#ov').classList.remove('on'); document.body.style.overflow=''; cur=null; history.replaceState(null,'',location.pathname+location.search); }
+function close(){ $('#ov').classList.remove('on'); document.body.style.overflow=''; cur=null; if(LMAP){try{LMAP.remove()}catch(e){} LMAP=null} history.replaceState(null,'',location.pathname+location.search); }
 function drawDetail(){
   const r=cur, pos=list.findIndex(x=>x.k===r.k);
   const kv=[['주소',r.addr],['유형',`${r.type}${r.sub&&r.sub!==r.type?` · ${r.sub}`:''}${r.usage?` · 용도 ${r.usage}`:''}`],['면적',`전용 ${pyf(r)}${r.excl?` (${r.excl}㎡)`:''}${r.sup&&r.sup!==r.excl?` · 공급 ${r.sup}㎡`:''}`],
@@ -304,7 +336,13 @@ function drawDetail(){
     <div class="dbody"><div class="col">
       <div class="bigprice">월 ${won(r.rent)}<small>보증금 ${won(r.dep)}</small>${r.rent&&r.py?`<small>평당 ${Math.round(r.rent/r.py*10)/10}만</small>`:''}</div>
       <div class="tagsrow" style="margin:0 0 12px">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}${r.pick10?`<span class="tg a">⭐ 1차 10선 ${r.pick10}번</span>`:''}<span class="tg">${SRCN[r.src]}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}${r.tags?r.tags.split(',').filter(Boolean).map(t=>`<span class="tg">${esc(t)}</span>`).join(''):''}</div>
+      ${r.p2?`<div class="corpbox high" style="background:rgba(245,185,66,.12);color:#ffe0a3;border-color:rgba(245,185,66,.35)">⚡ 특급 · 주차 2대 이상 (${P2N[r.p2]})<span>${esc(r.p2why)}${r.parkN!=null?` · 건물 주차대수 ${r.parkN}대`:''} · 세대 배정 대수는 통화 확인</span></div>`:''}
+      ${VM[r.k]?`<div class="rbox" style="border-color:rgba(31,143,106,.5);background:rgba(31,143,106,.12)"><div class="rt">🏞 조망 추천 ${VM[r.k].i} · ${VM[r.k].v}점 — ${esc(VM[r.k].title)}</div><div class="tagsrow" style="margin:0 0 6px">${VM[r.k].vt.map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}</div><ul>${VM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${VM[r.k].caution?`<div class="cau">⚠️ ${esc(VM[r.k].caution)}</div>`:''}</div>`:''}
       ${RM[r.k]?`<div class="rbox"><div class="rt">⭐ BK 추천 ${RM[r.k].i} · ${TIERN[RM[r.k].tier]} — ${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
+      <h3 style="margin-top:0">위치</h3>
+      <div class="addrbox">📍 ${r.loc==='exact'?esc(r.addr):`${esc(r.addr)} <span class="est">· ${r.loc==='approx'?'주소 비공개 매물(다방) → 좌표로 추정한 지번: ':'번지 비공개 → 좌표로 추정한 지번: '}${esc(r.addrEst||'조회 실패')}</span>`}${r.roadEst?`<br><span style="color:var(--txt2)">도로명(추정) ${esc(r.roadEst)}</span>`:''}${r.elev!=null?`<br><span style="color:var(--txt2)">해발 ${r.elev}m · 주변 300m 대비 ${r.prom>0?'+':''}${r.prom}m${r.open&&r.open.length?` · 트인 방향 ${r.open.join('·')}`:''}</span>`:''}</div>
+      <div class="dmap" id="dmap">${r.map?`<img src="${r.map}" alt="">`:''}</div>
+      <div class="acts" style="margin-top:0"><a class="btn" href="https://map.naver.com/p?c=${r.lon},${r.lat},17,0,0,0,dh" target="_blank" rel="noopener">네이버지도 열기 ↗</a><a class="btn" href="${mapUrl(r)}" target="_blank" rel="noopener">카카오맵 열기 ↗</a><a class="btn" href="https://www.google.com/maps?q=${r.lat},${r.lon}" target="_blank" rel="noopener">구글맵 ↗</a></div>
       <dl class="kv">${kv}</dl>
       <div class="corpbox ${r.cv==='check'?'check':'high'}">${esc(r.corp)}<span>${esc(r.corpHint||'설명문에 법인 관련 언급 없음')} · 통화 확인: 법인 명의 계약 · 세금계산서 · 사업자등록 · 전입 가능 · 세대수 · 입주일</span></div>
       <div class="acts"><a class="btn pri" href="${r.url}" target="_blank" rel="noopener">${SRCN[r.src]} 원문 보기 ↗</a><a class="btn" href="${mapUrl(r)}" target="_blank" rel="noopener">🗺 지도</a>
@@ -316,6 +354,7 @@ function drawDetail(){
   $('#dfav').onclick=()=>{toggleFav(r.k);$('#dfav').textContent=favs.has(r.k)?'♥ 선택됨':'♡ 선택'};
   $('#dcopy').onclick=()=>copy(lineOf(r),'매물 요약을 복사했습니다');
   $('#memo').oninput=e=>{memos[r.k]=e.target.value; if(!memos[r.k])delete memos[r.k]; SS('h100.memos',memos)};
+  initMap(r);
   if(r.nph){ $('#al').onclick=()=>go(-1); $('#ar').onclick=()=>go(1); $('#mainimg').onclick=()=>openLb();
     $('#thumbs').querySelectorAll('img').forEach(t=>t.onclick=()=>{idx=+t.dataset.i;showIdx()});
     let sx=null; const m=$('#main'); m.ontouchstart=e=>sx=e.touches[0].clientX; m.ontouchend=e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(dx<0?1:-1);sx=null};
@@ -323,6 +362,22 @@ function drawDetail(){
     [2,3].forEach(i=>{if(i<=r.nph){const p=new Image();p.src=img(r,i,0)}});
   }
   $('#ov').scrollTop=0;
+}
+let LMAP=null;
+function initMap(r){
+  if(!r.lat)return;
+  if(!window.L){ window.addEventListener('load',()=>{if(cur&&cur.k===r.k)initMap(r)},{once:true}); return }
+  const el=$('#dmap'); if(!el)return; el.innerHTML='';
+  try{
+    if(LMAP){LMAP.remove();LMAP=null}
+    LMAP=L.map(el,{scrollWheelZoom:false,attributionControl:true}).setView([r.lat,r.lon],17);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(LMAP);
+    L.circleMarker([D.home.lat,D.home.lon],{radius:7,color:'#fff',weight:2,fillColor:'#ff5c8a',fillOpacity:1}).addTo(LMAP).bindTooltip('집 회나무로73',{permanent:true,direction:'right',offset:[8,0]});
+    L.circleMarker([D.sf.lat,D.sf.lon],{radius:7,color:'#fff',weight:2,fillColor:'#34c77b',fillOpacity:1}).addTo(LMAP).bindTooltip('서울숲역',{permanent:true,direction:'right',offset:[8,0]});
+    if(r.loc==='approx'){ L.circle([r.lat,r.lon],{radius:100,color:'#ff3c3c',weight:2,fillColor:'#ff6b6b',fillOpacity:.18}).addTo(LMAP); L.circleMarker([r.lat,r.lon],{radius:6,color:'#fff',weight:2,fillColor:'#ff3c3c',fillOpacity:1}).addTo(LMAP).bindTooltip('추정 위치 (반경 100m)',{permanent:true,direction:'top',offset:[0,-8]}); }
+    else { L.marker([r.lat,r.lon]).addTo(LMAP).bindTooltip(r.loc==='hidden'?'주소 비공개 · 좌표 기준':(r.addr||'매물'),{permanent:true,direction:'top',offset:[-15,-12]}); }
+    setTimeout(()=>LMAP.invalidateSize(),50);
+  }catch(e){ el.innerHTML=r.map?`<img src="${r.map}" alt="">`:''; }
 }
 function go(d){ if(!cur||!cur.nph)return; idx=(idx+d+cur.nph)%cur.nph; showIdx(); }
 function showIdx(){ const r=cur; $('#mainimg').src=img(r,idx+1,0); $('#cnt').textContent=`${idx+1} / ${r.nph}`;
@@ -347,16 +402,16 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{tab=b.datase
 ['zone','dong','type','src','sort'].forEach(k=>$('#'+k).onchange=e=>{st[k]=e.target.value;render()});
 $('#rent').oninput=e=>{st.rent=+e.target.value;$('#rentv').textContent=st.rent+'만';render()};
 $('#py').oninput=e=>{st.py=+e.target.value;$('#pyv').textContent=st.py+'평';render()};
-['corp','imm','whole','p10'].forEach(k=>$('#'+k).onclick=()=>{st[k]=!st[k];syncUI();render()});
+['corp','imm','whole','p10','b2','p2'].forEach(k=>$('#'+k).onclick=()=>{st[k]=!st[k];syncUI();render()});
 $('#favonly').onclick=()=>{st.fav=!st.fav;syncUI();render()};
 let qt; $('#q').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{st.q=e.target.value;render()},150)};
-$('#reset').onclick=()=>{Object.assign(st,{q:'',zone:'',dong:'',type:'',src:'',rent:600,py:15,corp:false,imm:false,whole:false,p10:false,fav:false,sort:'rank'});syncUI();render()};
+$('#reset').onclick=()=>{Object.assign(st,{q:'',zone:'',dong:'',type:'',src:'',rent:600,py:15,corp:false,imm:false,whole:false,p10:false,b2:false,p2:false,fav:false,sort:'rank'});syncUI();render()};
 $('#copyfav').onclick=()=>{const rs=[...D.top,...D.rest].filter(r=>favs.has(r.k)); if(!rs.length)return toast('선택한 매물이 없습니다'); copy(`이사 매물 선택 ${rs.length}건\n\n`+rs.map(lineOf).join('\n\n'),`${rs.length}건을 복사했습니다`)};
 $('#copyall').onclick=()=>copy(`이사 매물 ${list.length}건\n\n`+list.map(lineOf).join('\n\n'),`${list.length}건을 복사했습니다`);
 
 $('#ftog').onclick=()=>{const f=$('#filters');f.classList.toggle('open');$('#ftog').textContent=f.classList.contains('open')?'필터 ▴':'필터 ▾'};
 fillDong(); syncUI(); render();
-if(location.hash){const k=location.hash.slice(1); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=RM[r.k]?'reco':(r.full?'top':'rest');syncUI();render()} open(r) }}
+if(location.hash){const k=location.hash.slice(1); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=VM[r.k]?'view':(RM[r.k]?'reco':(r.full?'top':'rest'));syncUI();render()} open(r) }}
 })();
 </script>
 </body>
