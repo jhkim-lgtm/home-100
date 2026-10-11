@@ -115,6 +115,24 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.on{opacity:1}
 .foot{color:var(--txt3);font-size:12px;padding:20px 0 50px;line-height:1.7}
+.rintro{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:14px 0 18px;display:none}
+.rintro.on{display:block}
+.rintro h2{font-size:17px;margin:0 0 6px;font-weight:800}
+.rintro p{margin:0 0 10px;color:var(--txt2);font-size:14px}
+.crit{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 16px;margin:10px 0 4px}
+.crit div{font-size:13px;color:var(--txt2);line-height:1.55}.crit b{color:var(--txt);display:block;font-size:13.5px}
+.rnote{background:rgba(245,185,66,.1);border:1px solid rgba(245,185,66,.3);color:#ffe0a3;border-radius:10px;padding:10px 12px;font-size:13px;margin:12px 0 4px;line-height:1.55}
+.excl{margin:12px 0 0;font-size:13px;color:var(--txt3);line-height:1.55}.excl summary{cursor:pointer;color:var(--txt2);font-weight:700;font-size:13.5px}
+.excl ul{margin:8px 0 0;padding-left:18px}.excl li{margin:3px 0}.excl b{color:var(--txt2)}
+.why{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px}
+.why .rt{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:6px;line-height:1.4}
+.why ul{margin:0;padding-left:16px;font-size:13px;color:var(--txt2);line-height:1.55}.why li{margin:2px 0}
+.why .cau{margin-top:7px;font-size:12.5px;color:#ffd48a;line-height:1.5}
+.bd.tier{background:var(--amber);color:#111}.bd.tierS{background:var(--pink);color:#fff}
+.rbox{background:rgba(74,149,255,.1);border:1px solid rgba(74,149,255,.35);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+.rbox .rt{font-weight:800;font-size:15px;margin-bottom:6px;line-height:1.4}
+.rbox ul{margin:0;padding-left:16px;font-size:13.5px;color:var(--txt);line-height:1.55}.rbox .cau{margin-top:8px;font-size:13px;color:#ffd48a;line-height:1.5}
+@media (max-width:560px){.card .why ul{display:block}.card .why{display:block}}
 .lb{position:fixed;inset:0;background:#000;z-index:80;display:none;align-items:center;justify-content:center}
 .lb.on{display:flex}
 .lb img{max-width:100vw;max-height:100vh;object-fit:contain}
@@ -145,8 +163,8 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 <body>
 <header><div class="wrap">
   <div class="top">
-    <h1>🏠 이사 매물 100선 <small>네이버부동산 · 직방 · 다방 · 수집 2026-10-07</small></h1>
-    <div class="tabs"><button class="on" data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
+    <h1>🏠 이사 매물 100선 <small>네이버부동산 · 직방 · 다방 · 수집 2026-10-07 · BK 추천 2026-10-12</small></h1>
+    <div class="tabs"><button class="on" data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
     <div class="grow"></div>
     <div class="search">🔍<input id="q" placeholder="동·주소·설명·중개사 검색" autocomplete="off"></div>
     <button class="chip" id="ftog">필터 ▾</button>
@@ -172,6 +190,7 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 </div></header>
 
 <main class="wrap">
+  <div class="rintro" id="rintro"></div>
   <div class="meta"><div id="count"></div><div class="act"><button class="btn" id="copyfav">♥ 선택 목록 복사</button><button class="btn" id="copyall">현재 목록 복사</button></div></div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" style="display:none">조건에 맞는 매물이 없습니다.</div>
@@ -186,11 +205,15 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 <div class="toast" id="toast"></div>
 
 <script src="data.js"></script>
+<script src="reco.js"></script>
 <script>
 (function(){
 const D=window.DATA, $=s=>document.querySelector(s);
 const SRCK={'네이버':'naver','직방':'zigbang','다방':'dabang'}, SRCN={'네이버':'네이버부동산','직방':'직방','다방':'다방'};
-let tab='top', cur=null, idx=0, list=[];
+let tab='reco', cur=null, idx=0, list=[];
+const R=window.RECO||{picks:[],criteria:[],excluded:[]}; const RM={}; R.picks.forEach((p,i)=>{p.i=i+1;RM[p.k]=p});
+const TIERN={S:'최우선',A:'강력 추천',B:'대안'};
+const baseList=()=>tab==='reco'?R.picks.map(p=>[...D.top,...D.rest].find(r=>r.k===p.k)).filter(Boolean):(tab==='top'?D.top:D.rest);
 const LS=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
 const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let favs=new Set(LS('h100.favs')||[]), memos=LS('h100.memos')||{};
@@ -216,7 +239,7 @@ function syncUI(){
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
 }
 function filter(){
-  const src=tab==='top'?D.top:D.rest; const q=st.q.trim().toLowerCase();
+  const src=baseList(); const q=st.q.trim().toLowerCase();
   let out=src.filter(r=>{
     if(st.zone&&r.zone!==st.zone)return false; if(st.dong&&r.dong!==st.dong)return false; if(st.type&&r.type!==st.type)return false; if(st.src&&r.src!==st.src)return false;
     if(r.rent!=null&&r.rent>st.rent)return false; if(r.py!=null&&r.py<st.py)return false;
@@ -228,13 +251,13 @@ function filter(){
   const S={rank:(a,b)=>(a.rank||1e9)-(b.rank||1e9)||(b.score||0)-(a.score||0),rent:(a,b)=>n(a.rent)-n(b.rent),rentd:(a,b)=>n(b.rent)-n(a.rent),py:(a,b)=>(b.py||0)-(a.py||0),
     ppy:(a,b)=>n(a.rent&&a.py?a.rent/a.py:null)-n(b.rent&&b.py?b.rent/b.py:null),dh:(a,b)=>n(a.dh)-n(b.dh),ds:(a,b)=>n(a.ds)-n(b.ds),dep:(a,b)=>n(a.dep)-n(b.dep),
     confirm:(a,b)=>(b.confirm||'').localeCompare(a.confirm||''),nph:(a,b)=>(b.nph||0)-(a.nph||0)};
-  out.sort(S[st.sort]||S.rank); return out;
+  if(tab==='reco') out.sort((a,b)=>RM[a.k].i-RM[b.k].i); else out.sort(S[st.sort]||S.rank); return out;
 }
 function card(r){
   const el=document.createElement('article'); el.className='card'; el.dataset.k=r.k;
   const strip=r.nph>1?`<div class="strip">${[2,3,4,5].filter(i=>i<=r.nph).map(i=>`<img loading="lazy" src="${img(r,i,1)}" alt="">`).join('')}</div>`:'';
   el.innerHTML=`<div class="ph">${r.nph?`<img loading="lazy" src="${img(r,1,1)}" alt="" onload="this.classList.add('ok')">`:''}${strip}
-    <div class="badges">${r.rank?`<span class="bd rank">${r.rank}위</span>`:''}${r.pick10?`<span class="bd p10">⭐ 10선 ${r.pick10}</span>`:''}</div>
+    <div class="badges">${tab==='reco'&&RM[r.k]?`<span class="bd tier ${RM[r.k].tier==='S'?'tierS':''}">추천 ${RM[r.k].i} · ${TIERN[RM[r.k].tier]}</span>`:''}${r.rank?`<span class="bd rank">${r.rank}위</span>`:''}${r.pick10?`<span class="bd p10">⭐ 10선 ${r.pick10}</span>`:''}</div>
     <div class="src"><span class="bd ${SRCK[r.src]}">${SRCN[r.src]}</span></div>
     <button class="heart ${favs.has(r.k)?'on':''}" data-fav="${r.k}" title="선택">${favs.has(r.k)?'♥':'♡'}</button>
     ${r.nph?`<span class="nph">📷 ${r.nph}${r.full?'':' / '+r.nsrc}</span>`:'<span class="nph">사진 없음</span>'}</div>
@@ -243,21 +266,26 @@ function card(r){
     <div class="title">${esc(r.dong)} · ${esc(r.type)}${r.sub&&r.sub!==r.type?` (${esc(r.sub)})`:''} · 전용 ${pyf(r)}${r.excl?` (${r.excl}㎡)`:''}</div>
     <div class="sub">${esc(r.addr)} · ${esc(r.floor)}층${r.rooms?` · 방 ${esc(r.rooms)}`:''}${r.hh?` · ${r.hh}세대`:''} · ${esc(r.movein||'입주 미기재')}</div>
     <div class="tagsrow">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}<span class="tg">집 ${km(r.dh)}</span><span class="tg">서울숲 ${km(r.ds)}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}</div>
+    ${tab==='reco'&&RM[r.k]?`<div class="why"><div class="rt">${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
   </div>`;
   return el;
 }
 function render(){
   list=filter(); const g=$('#grid'); g.innerHTML=''; const frag=document.createDocumentFragment(); list.forEach(r=>frag.appendChild(card(r))); g.appendChild(frag);
   $('#empty').style.display=list.length?'none':'block';
-  const base=tab==='top'?D.top.length:D.rest.length;
+  const base=baseList().length;
+  const ri=$('#rintro'); if(tab==='reco'){ ri.classList.add('on'); if(!ri.innerHTML) ri.innerHTML=`<h2>⭐ BK 맞춤 추천 ${R.picks.length}건 <small style="font-size:12px;color:var(--txt3);font-weight:600">작성 ${R.made} · 100선(수집 2026-10-07) 기준</small></h2><p>${esc(R.intro)}</p>
+    <div class="crit">${R.criteria.map(([a,b])=>`<div><b>${esc(a)}</b>${esc(b)}</div>`).join('')}</div>
+    <div class="rnote">${esc(R.note)}</div>
+    <details class="excl"><summary>아깝게 제외한 매물과 이유</summary><ul>${R.excluded.map(([a,b])=>`<li><b>${esc(a)}</b> — ${esc(b)}</li>`).join('')}</ul></details>`; } else ri.classList.remove('on');
   $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${base}건 · ♥ ${favs.size}건 선택`;
   SS('h100.st',st);
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1600)}
 function toggleFav(k){ if(favs.has(k))favs.delete(k); else favs.add(k); SS('h100.favs',[...favs]);
   document.querySelectorAll(`[data-fav="${k}"]`).forEach(b=>{b.classList.toggle('on',favs.has(k));b.textContent=favs.has(k)?'♥':'♡'});
-  $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${(tab==='top'?D.top:D.rest).length}건 · ♥ ${favs.size}건 선택`; if(st.fav)render(); }
-function lineOf(r){return `${r.rank?r.rank+'위 ':''}${r.dong} ${r.type} 전용 ${pyf(r)} · 월 ${won(r.rent)}/보증금 ${won(r.dep)} · ${r.addr} · ${r.floor}층${r.hh?' · '+r.hh+'세대':''} · ${r.movein||''}${r.tels[0]?' · '+r.realtor+' '+r.tels.join(', '):''}${memos[r.k]?' · 메모: '+memos[r.k]:''}\n${r.url}`}
+  $('#count').innerHTML=`<b style="color:var(--txt)">${list.length}건</b> / ${baseList().length}건 · ♥ ${favs.size}건 선택`; if(st.fav)render(); }
+function lineOf(r){return `${RM[r.k]?'[BK 추천 '+RM[r.k].i+'] ':''}${r.rank?r.rank+'위 ':''}${r.dong} ${r.type} 전용 ${pyf(r)} · 월 ${won(r.rent)}/보증금 ${won(r.dep)} · ${r.addr} · ${r.floor}층${r.hh?' · '+r.hh+'세대':''} · ${r.movein||''}${r.tels[0]?' · '+r.realtor+' '+r.tels.join(', '):''}${memos[r.k]?' · 메모: '+memos[r.k]:''}\n${r.url}`}
 function copy(text,msg){navigator.clipboard?.writeText(text).then(()=>toast(msg),()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(msg)})}
 
 // detail
@@ -269,13 +297,14 @@ function drawDetail(){
     ['층·구조',`${r.floor}층${r.rooms?` · 방 ${r.rooms}`:''}${r.baths?` · 욕실 ${r.baths}`:''}${r.dir?` · ${r.dir}`:''}`],['세대수',r.hh?`${r.hh}세대 (건축물대장)`:'미기재 · 중개사 확인'],['입주',r.movein||'미기재'],['주차',r.park||'미기재'],['사용승인',r.apr||'-'],['관리비',r.manage||'미기재'],
     ['거리',`집(회나무로73) ${km(r.dh)} · 서울숲역 ${km(r.ds)}`],['원문 확인일',r.confirm||'-'],['중개사',r.realtor||'-']].map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
   const thumbs=r.nph?Array.from({length:r.nph},(_,i)=>`<img src="${img(r,i+1,1)}" data-i="${i}" class="${i===idx?'on':''}" alt="">`).join(''):'';
-  $('#dlg').innerHTML=`<div class="dhead"><h2>${r.rank?`<span style="color:var(--blue)">${r.rank}위</span> `:''}${esc(r.dong)} · ${esc(r.type)} · 월 ${won(r.rent)} / ${won(r.dep)}</h2>
+  $('#dlg').innerHTML=`<div class="dhead"><h2>${RM[r.k]?`<span style="color:var(--amber)">추천 ${RM[r.k].i}</span> `:''}${r.rank?`<span style="color:var(--blue)">${r.rank}위</span> `:''}${esc(r.dong)} · ${esc(r.type)} · 월 ${won(r.rent)} / ${won(r.dep)}</h2>
       <div class="nav"><button id="prev" ${pos<=0?'disabled':''}>← 이전</button><button id="next" ${pos>=list.length-1?'disabled':''}>다음 →</button></div><button class="x" id="close">✕</button></div>
     <div class="gal"><div class="main" id="main">${r.nph?`<img id="mainimg" src="${img(r,1,0)}" alt=""><div class="cnt" id="cnt">1 / ${r.nph}</div><div class="ar l" id="al">‹</div><div class="ar r" id="ar">›</div>`:'<div class="none">원문에 사진이 없는 매물입니다</div>'}</div>
       ${thumbs?`<div class="thumbs" id="thumbs">${thumbs}</div>`:''}</div>
     <div class="dbody"><div class="col">
       <div class="bigprice">월 ${won(r.rent)}<small>보증금 ${won(r.dep)}</small>${r.rent&&r.py?`<small>평당 ${Math.round(r.rent/r.py*10)/10}만</small>`:''}</div>
       <div class="tagsrow" style="margin:0 0 12px">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}${r.pick10?`<span class="tg a">⭐ 1차 10선 ${r.pick10}번</span>`:''}<span class="tg">${SRCN[r.src]}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}${r.tags?r.tags.split(',').filter(Boolean).map(t=>`<span class="tg">${esc(t)}</span>`).join(''):''}</div>
+      ${RM[r.k]?`<div class="rbox"><div class="rt">⭐ BK 추천 ${RM[r.k].i} · ${TIERN[RM[r.k].tier]} — ${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
       <dl class="kv">${kv}</dl>
       <div class="corpbox ${r.cv==='check'?'check':'high'}">${esc(r.corp)}<span>${esc(r.corpHint||'설명문에 법인 관련 언급 없음')} · 통화 확인: 법인 명의 계약 · 세금계산서 · 사업자등록 · 전입 가능 · 세대수 · 입주일</span></div>
       <div class="acts"><a class="btn pri" href="${r.url}" target="_blank" rel="noopener">${SRCN[r.src]} 원문 보기 ↗</a><a class="btn" href="${mapUrl(r)}" target="_blank" rel="noopener">🗺 지도</a>
@@ -327,7 +356,7 @@ $('#copyall').onclick=()=>copy(`이사 매물 ${list.length}건\n\n`+list.map(li
 
 $('#ftog').onclick=()=>{const f=$('#filters');f.classList.toggle('open');$('#ftog').textContent=f.classList.contains('open')?'필터 ▴':'필터 ▾'};
 fillDong(); syncUI(); render();
-if(location.hash){const k=location.hash.slice(1); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=r.full?'top':'rest';syncUI();render()} open(r) }}
+if(location.hash){const k=location.hash.slice(1); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=RM[r.k]?'reco':(r.full?'top':'rest');syncUI();render()} open(r) }}
 })();
 </script>
 </body>
