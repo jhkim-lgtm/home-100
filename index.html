@@ -182,6 +182,59 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
   .badges{top:6px;left:6px}.src{top:6px;right:6px}.bd{font-size:11px;padding:2px 6px}
   .search{min-width:0;flex:1}
 }
+
+/* Monthly rent and exclusive area lead every listing. */
+.price.listing-title{display:block;margin:0;color:var(--txt);font-size:20px;line-height:1.4;white-space:nowrap;letter-spacing:-.5px}
+.costline,.info-line{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--txt2);font-size:13px;line-height:1.6;margin-top:4px}
+.costline span,.info-line span{white-space:nowrap}
+.title{white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;overflow-wrap:anywhere;line-height:1.6;margin-top:9px}
+.sub{white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;overflow-wrap:anywhere;line-height:1.6;margin-top:4px}
+.listing-address{padding-top:7px;margin-top:7px;border-top:1px solid var(--line)}
+.body{padding:14px 14px 16px}
+.dhead h2{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.5}
+.head-primary{display:block;white-space:nowrap}
+.head-secondary{display:block;color:var(--txt2);font-size:13px;font-weight:600;word-break:keep-all;overflow-wrap:anywhere;margin-top:2px}
+.bigprice{font-size:24px;line-height:1.5;white-space:nowrap}
+.detail-cost{margin:0 0 10px}
+.kv{gap:9px 12px;line-height:1.65}
+.kv dd,.why,.rbox,.reasons,.rintro,.crit,.addrbox,.desc,.foot{word-break:keep-all;overflow-wrap:anywhere}
+.why li,.rbox li{margin:5px 0}
+.rintro h2 small,.rintro h2>span{display:block;margin-top:4px;line-height:1.6}
+.foot p{margin:0 0 10px}
+.badges{flex-wrap:wrap;max-width:calc(100% - 105px)}
+.tagsrow{line-height:1.5}
+@media (max-width:900px){
+  .top .tabs{flex:1 1 100%;order:3;max-width:100%;overflow-x:auto}
+  .tabs button{white-space:nowrap;flex:none}
+  .crit{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+}
+@media (max-width:560px){
+  .wrap{padding:0 12px}
+  .grid{grid-template-columns:1fr;gap:16px}
+  .body{padding:14px 16px 16px}
+  .price.listing-title{font-size:21px}
+  .title{font-size:15px}
+  .sub,.costline,.info-line{font-size:14px}
+  .tagsrow{display:flex}
+  .heart{display:flex;width:36px;height:36px;top:38px}
+  .nph{display:block}
+  .ph{aspect-ratio:16/10}
+  .why .rt{font-size:15px}
+  .why ul,.rbox ul,.reasons{font-size:14px;line-height:1.7}
+  .rintro{padding:16px}
+  .rintro p{line-height:1.7}
+  .crit{grid-template-columns:1fr;gap:12px}
+  .dhead{flex-wrap:wrap;padding:12px;gap:8px;align-items:flex-start}
+  .dhead h2{flex:1 1 calc(100% - 48px);font-size:17px}
+  .dhead .x{order:2;flex:none}
+  .dhead .nav{order:3;width:100%;justify-content:space-between}
+  .bigprice{font-size:22px}
+  .kv{grid-template-columns:76px minmax(0,1fr);font-size:14px}
+  .col{padding:16px}
+  .meta .act{width:100%}
+  .sech{flex-wrap:wrap;gap:3px 10px}
+}
+@media (max-width:359px){.price.listing-title{font-size:19px}.bigprice{font-size:20px}.head-primary{font-size:16px}}
 </style>
 </head>
 <body>
@@ -224,8 +277,8 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" style="display:none">조건에 맞는 매물이 없습니다.</div>
   <div class="foot">
-    기준점: 집(회나무로73·이태원동 5-7)과 서울숲역. 월세·보증금 단위는 만원이며 네이버·직방·다방 원문 기준(2026-10-07 수집)으로, 현재 거래 상태와 실제 조건은 중개사 통화로 확인합니다.<br>
-    법인 계약 판정은 설명문·용도(상가주택·근생·다가구 전체) 기준 1차 힌트입니다. 다방은 동까지만 주소가 공개되고, 세대수 0은 건축물대장 미기재입니다. ♥ 선택·메모·👁 본 매물 표시는 이 브라우저에만 저장됩니다(휴대폰과 PC는 따로). 상세를 열면 자동으로 '봤음'이 되고, 배지를 누르면 수동으로 바꿀 수 있습니다. 지도는 OpenStreetMap(© OpenStreetMap contributors) 기반이며, 다방 매물은 동까지만 공개돼 좌표로 추정한 위치(반경 100m)와 지번을 표시합니다. 고도는 SRTM 30m 자료입니다. ⚡특급 '추정'은 건물 주차대수·세대수·설명문으로 계산한 값이라 세대 배정은 통화 확인이 필요합니다.
+    <p>기준점: 집(회나무로73·이태원동 5-7)과 서울숲역. 월세·보증금 단위는 만원이며 네이버·직방·다방 원문 기준(2026-10-07 수집)으로, 현재 거래 상태와 실제 조건은 중개사 통화로 확인합니다.</p>
+    <p>법인 계약 판정은 설명문·용도(상가주택·근생·다가구 전체) 기준 1차 힌트입니다. 다방은 동까지만 주소가 공개되고, 세대수 0은 건축물대장 미기재입니다. ♥ 선택·메모·👁 본 매물 표시는 이 브라우저에만 저장됩니다(휴대폰과 PC는 따로). 상세를 열면 자동으로 '봤음'이 되고, 배지를 누르면 수동으로 바꿀 수 있습니다. 지도는 OpenStreetMap(© OpenStreetMap contributors) 기반이며, 다방 매물은 동까지만 공개돼 좌표로 추정한 위치(반경 100m)와 지번을 표시합니다. 고도는 SRTM 30m 자료입니다. ⚡특급 '추정'은 건물 주차대수·세대수·설명문으로 계산한 값이라 세대 배정은 통화 확인이 필요합니다.</p>
   </div>
 </main>
 
@@ -260,6 +313,7 @@ const saved=LS('h100.st'); if(saved) Object.assign(st,saved);
 
 const won=v=>v==null?'-':(v>=10000?(v/10000).toFixed(v%10000?1:0)+'억':Math.round(v).toLocaleString('ko-KR')+'만');
 const pyf=r=>r.py?`${r.py.toFixed(r.py%1?1:0)}평`:'-';
+const listingTitle=r=>`월세 ${won(r.rent)} / 전용 ${pyf(r)}`;
 const km=v=>v==null?'-':(v<1?Math.round(v*1000)+'m':v.toFixed(1)+'km');
 const img=(r,i,t)=>`img/${r.k}/${t?'t':''}${i}.jpg`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -313,9 +367,12 @@ function card(r){
     <button class="eye ${seen.has(r.k)?'on':''}" data-eye="${r.k}" title="본 매물 표시 켜기/끄기">${seen.has(r.k)?'👁 봤음':'● 안 봄'}</button>
     ${r.nph?`<span class="nph">📷 ${r.nph}${r.full?'':' / '+r.nsrc}</span>`:'<span class="nph">사진 없음</span>'}</div>
   <div class="body">
-    <div class="price">월 ${won(r.rent)}<small>보증금 ${won(r.dep)}${r.manage?` · 관리비 ${esc(r.manage)}`:''}</small></div>
-    <div class="title">${esc(r.dong)} · ${esc(r.type)}${r.sub&&r.sub!==r.type?` (${esc(r.sub)})`:''} · 전용 ${pyf(r)}${r.excl?` (${r.excl}㎡)`:''}</div>
-    <div class="sub">${esc(r.addr)} · ${esc(r.floor)}층${r.rooms?` · 방 ${esc(r.rooms)}`:''}${r.baths?` · 🛁 ${r.baths}`:''}${r.hh?` · ${r.hh}세대`:''} · ${esc(r.movein||'입주 미기재')}</div>
+    <h3 class="price listing-title">${esc(listingTitle(r))}</h3>
+    <div class="costline"><span>보증금 ${won(r.dep)}</span>${r.manage?`<span>관리비 ${esc(r.manage)}</span>`:''}</div>
+    <div class="title">${esc(r.dong)} · ${esc(r.type)}${r.sub&&r.sub!==r.type?` (${esc(r.sub)})`:''}</div>
+    <div class="sub listing-address">${esc(r.addr)}</div>
+    <div class="info-line"><span>${esc(r.floor)}층</span>${r.rooms?`<span>방 ${esc(r.rooms)}</span>`:''}${r.baths?`<span>욕실 ${r.baths}</span>`:''}${r.hh?`<span>${r.hh}세대</span>`:''}</div>
+    <div class="sub">입주 ${esc(r.movein||'미기재')}</div>
     <div class="tagsrow">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}<span class="tg">집 ${km(r.dh)}</span><span class="tg">서울숲 ${km(r.ds)}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}</div>
     ${tab==='reco'&&RM[r.k]?`<div class="why"><div class="rt">${esc(RM[r.k].title)}</div><ul>${RM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${RM[r.k].caution?`<div class="cau">⚠️ ${esc(RM[r.k].caution)}</div>`:''}</div>`:''}
     ${tab==='view'&&VM[r.k]?`<div class="why"><div class="rt">${esc(VM[r.k].title)}</div><div class="tagsrow" style="margin:0 0 6px">${VM[r.k].vt.map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}${r.elev!=null?`<span class="tg">해발 ${r.elev}m · 돌출 ${r.prom>0?'+':''}${r.prom}m</span>`:''}</div><ul>${VM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${VM[r.k].caution?`<div class="cau">⚠️ ${esc(VM[r.k].caution)}</div>`:''}</div>`:''}
@@ -351,7 +408,7 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clea
 function toggleFav(k){ if(favs.has(k))favs.delete(k); else favs.add(k); SS('h100.favs',[...favs]);
   document.querySelectorAll(`[data-fav="${k}"]`).forEach(b=>{b.classList.toggle('on',favs.has(k));b.textContent=favs.has(k)?'♥':'♡'});
   updCount(); if(st.fav)render(); }
-function lineOf(r){return `${seen.has(r.k)?'[👁봤음] ':''}${r.status==='gone'?'[⛔내려감 '+(r.goneAt||'')+'] ':''}${r.p2?'[⚡특급 주차2대+ '+P2N[r.p2]+'] ':''}${VM[r.k]?'[조망 '+VM[r.k].i+'] ':''}${RM[r.k]?'[BK 추천 '+RM[r.k].i+'] ':''}${r.rank?r.rank+'위 ':''}${r.dong} ${r.type} 전용 ${pyf(r)} · 월 ${won(r.rent)}/보증금 ${won(r.dep)} · ${r.addr} · ${r.floor}층${r.baths?' · 욕실 '+r.baths:''}${r.hh?' · '+r.hh+'세대':''} · ${r.movein||''}${r.loc!=='exact'&&r.addrEst?' · 추정 지번 '+r.addrEst:''}${r.tels[0]?' · '+r.realtor+' '+r.tels.join(', '):''}${memos[r.k]?' · 메모: '+memos[r.k]:''}\n${r.url}`}
+function lineOf(r){return [listingTitle(r),`${r.dong} · ${r.type}`,[seen.has(r.k)?'👁 봤음':'',r.status==='gone'?'⛔ 내려감 '+(r.goneAt||''):'',r.p2?'⚡ 주차2대+ '+P2N[r.p2]:'',VM[r.k]?'조망 '+VM[r.k].i:'',RM[r.k]?'BK 추천 '+RM[r.k].i:'',r.rank?r.rank+'위':''].filter(Boolean).join(' · '),`보증금 ${won(r.dep)}${r.manage?' · 관리비 '+r.manage:''}`,r.addr,r.loc!=='exact'&&r.addrEst?'추정 지번 '+r.addrEst:'',`${r.floor}층${r.rooms?' · 방 '+r.rooms:''}${r.baths?' · 욕실 '+r.baths:''}${r.hh?' · '+r.hh+'세대':''}`,`입주 ${r.movein||'미기재'}`,r.tels.length?`${r.realtor||'중개사'} ${r.tels.join(', ')}`:'',memos[r.k]?'메모: '+memos[r.k]:'',r.url].filter(Boolean).join('\n')}
 function copy(text,msg){navigator.clipboard?.writeText(text).then(()=>toast(msg),()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(msg)})}
 
 // detail
@@ -363,12 +420,13 @@ function drawDetail(){
     ['층·구조',`${r.floor}층${r.rooms?` · 방 ${r.rooms}`:''}${r.baths?` · 욕실 ${r.baths}`:''}${r.dir?` · ${r.dir}`:''}`],['세대수',r.hh?`${r.hh}세대 (건축물대장)`:'미기재 · 중개사 확인'],['입주',r.movein||'미기재'],['주차',r.park||'미기재'],['사용승인',r.apr||'-'],['관리비',r.manage||'미기재'],
     ['거리',`집(회나무로73) ${km(r.dh)} · 서울숲역 ${km(r.ds)}`],['원문 확인일',r.confirm||'-'],['중개사',r.realtor||'-'],['게시 상태',r.status==='gone'?`⛔ 내려감 ${r.goneAt||''}${r.goneWhy?' · '+r.goneWhy:''}`:`게시 중 · 마지막 확인 ${r.lastSeen||D.built}${r.relistFrom?' · 🔁 재등록(이전 번호 '+r.relistFrom.split('_')[1]+')':''}`],['처음 발견',r.firstSeen||'-'],['가격 변동',r.chg||'없음'],['취향 점수(자동)',r.taste!=null?`${r.taste}점${r.tasteWhy&&r.tasteWhy.length?' · '+r.tasteWhy.join(', '):''}`:'-']].map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
   const thumbs=r.nph?Array.from({length:r.nph},(_,i)=>`<img src="${img(r,i+1,1)}" data-i="${i}" class="${i===idx?'on':''}" alt="">`).join(''):'';
-  $('#dlg').innerHTML=`<div class="dhead"><h2>${RM[r.k]?`<span style="color:var(--amber)">추천 ${RM[r.k].i}</span> `:''}${r.rank?`<span style="color:var(--blue)">${r.rank}위</span> `:''}${esc(r.dong)} · ${esc(r.type)} · 월 ${won(r.rent)} / ${won(r.dep)}</h2>
+  $('#dlg').innerHTML=`<div class="dhead"><h2><span class="head-primary">${esc(listingTitle(r))}</span><span class="head-secondary">${esc(r.dong)} · ${esc(r.type)}${RM[r.k]?` · 추천 ${RM[r.k].i}`:''}${r.rank?` · ${r.rank}위`:''}</span></h2>
       <div class="nav"><button id="prev" ${pos<=0?'disabled':''}>← 이전</button><button id="next" ${pos>=list.length-1?'disabled':''}>다음 →</button></div><button class="x" id="close">✕</button></div>
     <div class="gal"><div class="main" id="main">${r.nph?`<img id="mainimg" src="${img(r,1,0)}" alt=""><div class="cnt" id="cnt">1 / ${r.nph}</div><div class="ar l" id="al">‹</div><div class="ar r" id="ar">›</div>`:'<div class="none">원문에 사진이 없는 매물입니다</div>'}</div>
       ${thumbs?`<div class="thumbs" id="thumbs">${thumbs}</div>`:''}</div>
     <div class="dbody"><div class="col">
-      <div class="bigprice">월 ${won(r.rent)}<small>보증금 ${won(r.dep)}</small>${r.rent&&r.py?`<small>평당 ${Math.round(r.rent/r.py*10)/10}만</small>`:''}</div>
+      <div class="bigprice">${esc(listingTitle(r))}</div>
+      <div class="costline detail-cost"><span>보증금 ${won(r.dep)}</span>${r.manage?`<span>관리비 ${esc(r.manage)}</span>`:''}${r.rent&&r.py?`<span>평당 ${Math.round(r.rent/r.py*10)/10}만</span>`:''}</div>
       <div class="tagsrow" style="margin:0 0 12px">${corpTag(r)}${r.whole?'<span class="tg b">통건물</span>':''}${r.pick10?`<span class="tg a">⭐ 1차 10선 ${r.pick10}번</span>`:''}<span class="tg">${SRCN[r.src]}</span>${r.also.length?`<span class="tg">${r.also.join('·')}에도 노출</span>`:''}${r.tags?r.tags.split(',').filter(Boolean).map(t=>`<span class="tg">${esc(t)}</span>`).join(''):''}</div>
       ${r.p2?`<div class="corpbox high" style="background:rgba(245,185,66,.12);color:#ffe0a3;border-color:rgba(245,185,66,.35)">⚡ 특급 · 주차 2대 이상 (${P2N[r.p2]})<span>${esc(r.p2why)}${r.parkN!=null?` · 건물 주차대수 ${r.parkN}대`:''} · 세대 배정 대수는 통화 확인</span></div>`:''}
       ${VM[r.k]?`<div class="rbox" style="border-color:rgba(31,143,106,.5);background:rgba(31,143,106,.12)"><div class="rt">🏞 조망 추천 ${VM[r.k].i} · ${VM[r.k].v}점 — ${esc(VM[r.k].title)}</div><div class="tagsrow" style="margin:0 0 6px">${VM[r.k].vt.map(t=>`<span class="tg g">${esc(t)}</span>`).join('')}</div><ul>${VM[r.k].why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>${VM[r.k].caution?`<div class="cau">⚠️ ${esc(VM[r.k].caution)}</div>`:''}</div>`:''}
