@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>이사 매물 100선</title>
+<title>이사 매물 컬렉션 · 100선</title>
 <meta name="description" content="네이버부동산·직방·다방에서 모은 이사 후보 매물을 사진과 함께 한 화면에서 보는 뷰어">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111'/%3E%3Cpath d='M14 34 32 18l18 16v16H14z' fill='%234A95FF'/%3E%3C/svg%3E">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -236,14 +236,16 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 }
 @media (max-width:359px){.price.listing-title{font-size:19px}.bigprice{font-size:20px}.head-primary{font-size:16px}}
 </style>
+<link rel="stylesheet" href="glass.css?v=20261110">
+<meta name="theme-color" content="#07182a">
 </head>
 <body>
 <header><div class="wrap">
   <div class="top">
-    <h1>🏠 이사 매물 100선 <small id="subt">네이버부동산 · 직방 · 다방</small></h1>
+    <h1><span class="collection-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span><span class="brand-kicker">HOME COLLECTION</span>이사 매물 100선</span><small id="subt">네이버부동산 · 직방 · 다방</small></h1>
     <div class="tabs"><button data-tab="new">🆕 신규 매물</button><button class="on" data-tab="view">🏞 조망 추천 30</button><button data-tab="reco">⭐ BK 추천 10</button><button data-tab="top">100선</button><button data-tab="rest">나머지 후보 192</button></div>
     <div class="grow"></div>
-    <div class="search">🔍<input id="q" placeholder="동·주소·설명·중개사 검색" autocomplete="off"></div>
+    <div class="search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="q" aria-label="동·주소·설명·중개사 검색" placeholder="동·주소·설명·중개사 검색" autocomplete="off"></div>
     <button class="chip" id="ftog">필터 ▾</button>
   </div>
   <div class="filters" id="filters">
@@ -272,12 +274,16 @@ h3{font-size:14px;color:var(--txt2);margin:16px 0 8px;font-weight:700}
 </div></header>
 
 <main class="wrap">
+  <section class="collection-intro" aria-labelledby="collection-title">
+    <div><p class="eyebrow">A PLACE FOR YOUR NEXT CHAPTER</p><h2 id="collection-title">다음 집 컬렉션<span>.</span></h2><p class="collection-description">사진으로 살펴보고, 마음에 드는 매물을 모아두세요.</p></div>
+    <div class="collection-stats" aria-label="매물 현황"><div><span>현재 후보</span><strong id="live-count">—</strong></div><div><span>최근 7일 신규</span><strong id="new-count">—</strong></div><div class="updated"><span>최근 점검</span><strong id="latest-check">—</strong></div></div>
+  </section>
   <div class="rintro" id="rintro"></div>
   <div class="meta"><div id="count"></div><div class="act"><button class="btn" id="copyfav">♥ 선택 목록 복사</button><button class="btn" id="copyall">현재 목록 복사</button></div></div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" style="display:none">조건에 맞는 매물이 없습니다.</div>
   <div class="foot">
-    <p>기준점: 집(회나무로73·이태원동 5-7)과 서울숲역. 월세·보증금 단위는 만원이며 네이버·직방·다방 원문 기준(2026-10-07 수집)으로, 현재 거래 상태와 실제 조건은 중개사 통화로 확인합니다.</p>
+    <p>기준점: 집(회나무로73·이태원동 5-7)과 서울숲역. 월세·보증금 단위는 만원이며 네이버·직방·다방 원문 기준(<span id="footer-date">수집일 확인 중</span>)으로, 현재 거래 상태와 실제 조건은 중개사 통화로 확인합니다.</p>
     <p>법인 계약 판정은 설명문·용도(상가주택·근생·다가구 전체) 기준 1차 힌트입니다. 다방은 동까지만 주소가 공개되고, 세대수 0은 건축물대장 미기재입니다. ♥ 선택·메모·👁 본 매물 표시는 이 브라우저에만 저장됩니다(휴대폰과 PC는 따로). 상세를 열면 자동으로 '봤음'이 되고, 배지를 누르면 수동으로 바꿀 수 있습니다. 지도는 OpenStreetMap(© OpenStreetMap contributors) 기반이며, 다방 매물은 동까지만 공개돼 좌표로 추정한 위치(반경 100m)와 지번을 표시합니다. 고도는 SRTM 30m 자료입니다. ⚡특급 '추정'은 건물 주차대수·세대수·설명문으로 계산한 값이라 세대 배정은 통화 확인이 필요합니다.</p>
   </div>
 </main>
@@ -386,7 +392,7 @@ function render(){
   list=filter(); const g=$('#grid'); g.innerHTML=''; const frag=document.createDocumentFragment();
   const grouped=(tab==='view'||tab==='reco'||tab==='new'||st.sort==='p2'); let lastG=null;
   const nGone=list.filter(x=>x.status==='gone').length;
-  list.forEach(r=>{ if(grouped){const gk=r.status==='gone'?'gone':(r.p2?'p2':'rest'); if(gk!==lastG){lastG=gk; const h=document.createElement('div'); h.className='sech'+(gk==='p2'?' gold':(gk==='gone'?' red':'')); h.innerHTML=gk==='gone'?`⛔ 내려간 매물 <small>${nGone}건 · 마지막 점검 ${D.built}</small>`:(gk==='p2'?`⚡ 특급 · 주차 2대 이상(명시·추정) <small>${list.filter(x=>x.p2&&x.status!=='gone').length}건 · 추정은 통화 확인</small>`:(tab==='view'?`🏞 조망 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='reco'?`⭐ 추천 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='new'?`🆕 자동 점수 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건 · 9점 이상은 Slack 즉시 알림</small>`:`그 외 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`)))); frag.appendChild(h)}} frag.appendChild(card(r)) });
+  list.forEach(r=>{ if(grouped){const gk=r.status==='gone'?'gone':(r.p2?'p2':'rest'); if(gk!==lastG){lastG=gk; const h=document.createElement('div'); h.className='sech'+(gk==='p2'?' gold':(gk==='gone'?' red':'')); h.innerHTML=gk==='gone'?`⛔ 내려간 매물 <small>${nGone}건 · 마지막 점검 ${D.built}</small>`:(gk==='p2'?`⚡ 특급 · 주차 2대 이상(명시·추정) <small>${list.filter(x=>x.p2&&x.status!=='gone').length}건 · 추정은 통화 확인</small>`:(tab==='view'?`🏞 조망 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='reco'?`⭐ 추천 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`:(tab==='new'?`🆕 자동 점수 순 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건 · 자동 점수는 참고용</small>`:`그 외 <small>${list.filter(x=>!x.p2&&x.status!=='gone').length}건</small>`)))); frag.appendChild(h)}} frag.appendChild(card(r)) });
   g.appendChild(frag);
   $('#empty').style.display=list.length?'none':'block';
   const base=baseList().length;
@@ -394,11 +400,12 @@ function render(){
     <div class="crit">${X.criteria.map(([a,b])=>`<div><b>${esc(a)}</b>${esc(b)}</div>`).join('')}</div>
     <div class="rnote">${esc(X.note)}</div>
     <details class="excl"><summary>아깝게 제외한 매물과 이유</summary><ul>${X.excluded.map(([a,b])=>`<li><b>${esc(a)}</b> — ${esc(b)}</li>`).join('')}</ul></details>`;
-  if(tab==='reco'){ ri.classList.add('on'); ri.innerHTML=intro(R,'⭐','BK 맞춤 추천','100선(수집 2026-10-07) 기준'); }
-  else if(tab==='view'){ ri.classList.add('on'); ri.innerHTML=intro(V,'🏞','조망 우선 추천','292건 전체(수집 2026-10-07) · 욕실 2개 이상'); }
-  else if(tab==='new'){ ri.classList.add('on'); const n=NEWLIST().length; ri.innerHTML=`<h2>🆕 신규 매물 ${n}건 <span style="font-size:13px;color:var(--txt2);font-weight:600">(현재 필터 ${list.length}건 · 전용 ${st.py}평 이상 · 월세 ${st.rent}만 이하)</span> <small style="font-size:12px;color:var(--txt3);font-weight:600">최근 ${D.newWindow||7}일 안에 처음 올라온 매물 · 매일 07:40 네이버·직방·다방 재수집 · 점검 ${D.built}</small></h2>
-    <p>세 사이트에서 새로 올라온 매물을 매일 추가합니다. 같은 주소·중개사로 번호만 바뀐 재등록은 🔁로 표시하고 신규에서 뺍니다. 자동 점수는 욕실 2개 이상·주차 2대·테라스/조망 언급·법인 가능성·언덕 지형·보증금·생활권으로 계산하며, 9점 이상은 Slack #bk-agent에 바로 알립니다. 사진 판독은 자동이 아니니 점수는 후보 정렬용으로만 쓰세요.</p>
-    <div class="rnote">${n?`오늘 기준 신규 중 ⚡특급 ${NEWLIST().filter(x=>x.p2).length}건 · 자동 9점 이상 ${NEWLIST().filter(x=>(x.taste||0)>=9).length}건. 7일이 지나면 100선·나머지 탭으로만 남습니다.`:'최근 7일 안에 새로 올라온 매물이 없습니다. 100선·나머지 탭에서 🆕 칩으로 다시 확인할 수 있습니다.'}</div>`; }
+  if(tab==='reco'){ ri.classList.add('on'); ri.innerHTML=intro(R,'⭐','BK 맞춤 추천',`최초 선정 2026-10-07 · 거래 상태 ${D.built} 점검`); }
+  else if(tab==='view'){ ri.classList.add('on'); ri.innerHTML=intro(V,'🏞','조망 우선 추천',`최초 선정 2026-10-07 · 욕실 2개 이상 · 거래 상태 ${D.built} 점검`); }
+  else if(tab==='new'){ ri.classList.add('on'); const n=NEWLIST().length; ri.innerHTML=`<div class="new-heading"><h2>🆕 신규 매물 ${n}건</h2><span>필터 결과 ${list.length}건</span></div>
+    <p class="new-summary">최근 ${D.newWindow||7}일 · 전용 ${st.py}평 이상 · 월세 ${st.rent}만 이하 <span>점검 ${D.built}</span></p>
+    <details class="new-criteria"><summary>선정·업데이트 기준</summary><p>최근 ${D.newWindow||7}일 안에 처음 발견한 매물입니다. 매일 07:40 네이버·직방·다방에서 새로 올라온 매물을 수집합니다. 같은 주소·중개사로 번호만 바뀐 재등록은 🔁로 표시하고 신규에서 뺍니다. 자동 점수는 욕실 2개 이상·주차 2대·테라스/조망 언급·법인 가능성·언덕 지형·보증금·생활권으로 계산하며, 점수는 후보를 좁히는 참고값입니다. 사진과 추천 사유를 함께 확인하고, 실제 조건은 중개사에게 확인하세요.</p>
+    <div class="rnote">${n?`오늘 기준 신규 중 ⚡특급 ${NEWLIST().filter(x=>x.p2).length}건 · 자동 9점 이상 ${NEWLIST().filter(x=>(x.taste||0)>=9).length}건. 7일이 지나면 100선·나머지 탭으로만 남습니다.`:'최근 7일 안에 새로 올라온 매물이 없습니다. 100선·나머지 탭에서 🆕 칩으로 다시 확인할 수 있습니다.'}</div></details>`; }
   else ri.classList.remove('on');
   updCount();
   SS('h100.st',st);
@@ -506,7 +513,12 @@ $('#copyfav').onclick=()=>{const rs=[...D.top,...D.rest].filter(r=>favs.has(r.k)
 $('#copyall').onclick=()=>copy(`이사 매물 ${list.length}건\n\n`+list.map(lineOf).join('\n\n'),`${list.length}건을 복사했습니다`);
 
 $('#ftog').onclick=()=>{const f=$('#filters');f.classList.toggle('open');$('#ftog').textContent=f.classList.contains('open')?'필터 ▴':'필터 ▾'};
-$('#subt').textContent=`네이버부동산 · 직방 · 다방 · 수집 ${D.collected} · 점검 ${D.built}`; fillDong(); syncUI(); render();
+$('#subt').textContent='네이버부동산 · 직방 · 다방';
+$('#live-count').textContent=ALL().filter(r=>r.status!=='gone').length.toLocaleString('ko-KR');
+$('#new-count').textContent=NEWLIST().length.toLocaleString('ko-KR');
+$('#latest-check').textContent=D.built;
+$('#footer-date').textContent=`수집 ${D.collected} · 점검 ${D.built}`;
+fillDong(); syncUI(); render();
 if(location.hash){const k=resolve(location.hash.slice(1)); const r=[...D.top,...D.rest].find(x=>x.k===k); if(r){ if(!list.includes(r)){tab=VM[r.k]?'view':(RM[r.k]?'reco':(r.isNew?'new':(r.full?'top':'rest')));syncUI();render()} open(r) }}
 })();
 </script>
